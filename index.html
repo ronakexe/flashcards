@@ -328,7 +328,7 @@
   </div>
 
   <div class="answer-row">
-    <input type="text" id="answer-input" placeholder="e.g. veintitrés" autocomplete="off" />
+    <input type="text" id="answer-input" aria-label="Type the number in Spanish" autocomplete="off" />
     <button id="submit-btn">Submit</button>
   </div>
 
@@ -479,6 +479,7 @@ function nextQuestion(){
   inputEl.value = '';
   inputEl.disabled = false;
   submitBtn.disabled = false;
+  submitBtn.textContent = 'Submit';
   inputEl.focus();
 }
 
@@ -508,6 +509,7 @@ function submitAnswer(){
     feedbackEl.textContent = 'correct — ' + currentAnswer;
     inputEl.disabled = true;
     submitBtn.disabled = true;
+    submitBtn.textContent = 'Correct';
     setTimeout(nextQuestion, 1200);
   } else if(attempt === 1){
     attempt = 2;
@@ -528,6 +530,7 @@ function submitAnswer(){
     feedbackEl.textContent = 'wrong — answer was ' + currentAnswer + '. score reset to 0';
     inputEl.disabled = true;
     submitBtn.disabled = true;
+    submitBtn.textContent = 'Wrong';
     setTimeout(nextQuestion, 1800);
   }
 }
