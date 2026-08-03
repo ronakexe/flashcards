@@ -388,6 +388,8 @@ function secureRandomInt(min, max){
   return min + (val % range);
 }
 
+const STATS_KEY = 'flashcards-spanish-numbers-stats';
+
 let score = 0;
 let attempt = 1;
 let currentNumber;
@@ -395,6 +397,23 @@ let currentAnswer;
 let lastNumber = null;
 let questionsAnswered = 0;
 let questionsCorrect = 0;
+
+(function loadStats(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(STATS_KEY));
+    if (saved) {
+      score = saved.score || 0;
+      questionsAnswered = saved.questionsAnswered || 0;
+      questionsCorrect = saved.questionsCorrect || 0;
+    }
+  } catch (e) {}
+})();
+
+function saveStats(){
+  try {
+    localStorage.setItem(STATS_KEY, JSON.stringify({ score, questionsAnswered, questionsCorrect }));
+  } catch (e) {}
+}
 
 const scoreEl = document.getElementById('score');
 const attemptEl = document.getElementById('attempt-display');
@@ -451,6 +470,7 @@ function updateScore(delta){
   score = Math.max(0, score + delta);
   scoreEl.textContent = score;
   renderBoxes();
+  saveStats();
 }
 
 function submitAnswer(){
@@ -463,6 +483,7 @@ function submitAnswer(){
     questionsAnswered++;
     questionsCorrect++;
     renderStats();
+    saveStats();
     feedbackEl.style.color = 'var(--green)';
     feedbackEl.textContent = 'correct — ' + currentAnswer;
     inputEl.disabled = true;
@@ -482,6 +503,7 @@ function submitAnswer(){
     renderBoxes();
     questionsAnswered++;
     renderStats();
+    saveStats();
     feedbackEl.style.color = 'var(--red)';
     feedbackEl.textContent = 'wrong — answer was ' + currentAnswer + '. score reset to 0';
     inputEl.disabled = true;
@@ -495,6 +517,9 @@ inputEl.addEventListener('keydown', function(e){
   if(e.key === 'Enter') submitAnswer();
 });
 
+scoreEl.textContent = score;
+renderBoxes();
+renderStats();
 nextQuestion();
 </script>
 </body>
