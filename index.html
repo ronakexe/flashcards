@@ -274,6 +274,16 @@
     opacity: 0.9;
   }
 
+  button#submit-btn.state-correct {
+    background: var(--green);
+    opacity: 1;
+  }
+
+  button#submit-btn.state-wrong {
+    background: var(--red);
+    opacity: 1;
+  }
+
   #feedback {
     font-family: 'EB Garamond', serif;
     font-size: 16px;
@@ -496,6 +506,7 @@ function nextQuestion(){
   inputEl.disabled = false;
   submitBtn.disabled = false;
   submitBtn.textContent = 'Submit';
+  submitBtn.classList.remove('state-correct', 'state-wrong');
   inputEl.focus();
 }
 
@@ -520,6 +531,8 @@ function submitAnswer(){
       nextQuestion();
     } else {
       submitBtn.textContent = 'Wrong';
+      submitBtn.classList.remove('state-correct');
+    submitBtn.classList.add('state-wrong');
       inputEl.value = '';
       inputEl.focus();
     }
@@ -537,6 +550,8 @@ function submitAnswer(){
     inputEl.disabled = true;
     submitBtn.disabled = true;
     submitBtn.textContent = 'Correct';
+    submitBtn.classList.remove('state-wrong');
+    submitBtn.classList.add('state-correct');
     setTimeout(nextQuestion, 1200);
   } else if(attempt === 1){
     attempt = 2;
@@ -545,6 +560,8 @@ function submitAnswer(){
     feedbackEl.style.color = 'var(--red)';
     feedbackEl.textContent = 'wrong, try again';
     submitBtn.textContent = 'Wrong';
+    submitBtn.classList.remove('state-correct');
+    submitBtn.classList.add('state-wrong');
     inputEl.value = '';
     inputEl.focus();
   } else {
@@ -557,6 +574,8 @@ function submitAnswer(){
     feedbackEl.style.color = 'var(--red)';
     feedbackEl.textContent = 'wrong — score reset to 0. type it to continue';
     submitBtn.textContent = 'Wrong';
+    submitBtn.classList.remove('state-correct');
+    submitBtn.classList.add('state-wrong');
     inputEl.value = '';
     inputEl.placeholder = currentAnswer;
     locked = true;
