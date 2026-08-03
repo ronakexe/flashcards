@@ -303,6 +303,10 @@
       <p class="stat-value" id="score">0</p>
     </div>
     <div style="text-align:center;">
+      <p class="stat-label">Best</p>
+      <p class="stat-value" id="best-score">0</p>
+    </div>
+    <div style="text-align:center;">
       <p class="stat-label">Answered</p>
       <p class="stat-value" id="answered-count">0</p>
     </div>
@@ -400,6 +404,7 @@ function secureRandomInt(min, max){
 const STATS_KEY = 'flashcards-spanish-numbers-stats';
 
 let score = 0;
+let bestScore = 0;
 let attempt = 1;
 let currentNumber;
 let currentAnswer;
@@ -412,6 +417,7 @@ let questionsCorrect = 0;
     const saved = JSON.parse(localStorage.getItem(STATS_KEY));
     if (saved) {
       score = saved.score || 0;
+      bestScore = saved.bestScore || 0;
       questionsAnswered = saved.questionsAnswered || 0;
       questionsCorrect = saved.questionsCorrect || 0;
     }
@@ -420,11 +426,12 @@ let questionsCorrect = 0;
 
 function saveStats(){
   try {
-    localStorage.setItem(STATS_KEY, JSON.stringify({ score, questionsAnswered, questionsCorrect }));
+    localStorage.setItem(STATS_KEY, JSON.stringify({ score, bestScore, questionsAnswered, questionsCorrect }));
   } catch (e) {}
 }
 
 const scoreEl = document.getElementById('score');
+const bestScoreEl = document.getElementById('best-score');
 const attemptEl = document.getElementById('attempt-display');
 const numberEl = document.getElementById('number-display');
 const feedbackEl = document.getElementById('feedback');
@@ -478,6 +485,10 @@ function nextQuestion(){
 function updateScore(delta){
   score = Math.max(0, score + delta);
   scoreEl.textContent = score;
+  if (score > bestScore) {
+    bestScore = score;
+    bestScoreEl.textContent = bestScore;
+  }
   renderBoxes();
   saveStats();
 }
@@ -527,6 +538,7 @@ inputEl.addEventListener('keydown', function(e){
 });
 
 scoreEl.textContent = score;
+bestScoreEl.textContent = bestScore;
 renderBoxes();
 renderStats();
 nextQuestion();
