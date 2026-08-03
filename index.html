@@ -545,8 +545,6 @@ function submitAnswer(){
     questionsCorrect++;
     renderStats();
     saveStats();
-    feedbackEl.style.color = 'var(--green)';
-    feedbackEl.textContent = 'correct — ' + currentAnswer;
     inputEl.disabled = true;
     submitBtn.disabled = true;
     submitBtn.textContent = 'Correct';
@@ -557,8 +555,6 @@ function submitAnswer(){
     attempt = 2;
     attemptEl.textContent = '2 / 2';
     updateScore(-1);
-    feedbackEl.style.color = 'var(--red)';
-    feedbackEl.textContent = 'wrong, try again';
     submitBtn.textContent = 'Wrong';
     submitBtn.classList.remove('state-correct');
     submitBtn.classList.add('state-wrong');
