@@ -425,6 +425,7 @@ function secureRandomInt(min, max){
 }
 
 const STATS_KEY = 'flashcards-spanish-numbers-stats';
+const QUESTION_KEY = 'flashcards-spanish-numbers-question';
 
 let score = 0;
 let bestScore = 0;
@@ -454,6 +455,22 @@ function saveStats(){
   } catch (e) {}
 }
 
+function saveQuestion(){
+  try {
+    localStorage.setItem(QUESTION_KEY, JSON.stringify({ currentNumber, attempt, locked }));
+  } catch (e) {}
+}
+
+function loadQuestion(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(QUESTION_KEY));
+    if (saved && typeof saved.currentNumber === 'number' && saved.currentNumber >= 11 && saved.currentNumber <= 1000) {
+      return saved;
+    }
+  } catch (e) {}
+  return null;
+}
+
 const scoreEl = document.getElementById('score');
 const bestScoreEl = document.getElementById('best-score');
 const attemptEl = document.getElementById('attempt-display');
@@ -471,7 +488,7 @@ function renderBoxes(){
     const box = document.createElement('div');
     box.style.width = '20px';
     box.style.height = '20px';
-    box.style.background = 'var(--name)';
+    box.style.background = 'var(--green)';
     box.style.borderRadius = '4px';
     boxesEl.appendChild(box);
   }
@@ -507,6 +524,7 @@ function nextQuestion(){
   submitBtn.disabled = false;
   submitBtn.textContent = 'Submit';
   submitBtn.classList.remove('state-correct', 'state-wrong');
+  saveQuestion();
   inputEl.focus();
 }
 
@@ -555,6 +573,7 @@ function submitAnswer(){
     attempt = 2;
     attemptEl.textContent = '2 / 2';
     updateScore(-1);
+    saveQuestion();
     submitBtn.textContent = 'Wrong';
     submitBtn.classList.remove('state-correct');
     submitBtn.classList.add('state-wrong');
@@ -575,6 +594,7 @@ function submitAnswer(){
     inputEl.value = '';
     inputEl.placeholder = currentAnswer;
     locked = true;
+    saveQuestion();
     inputEl.focus();
   }
 }
@@ -588,7 +608,34 @@ scoreEl.textContent = score;
 bestScoreEl.textContent = bestScore;
 renderBoxes();
 renderStats();
-nextQuestion();
+
+const savedQuestion = loadQuestion();
+if (savedQuestion) {
+  currentNumber = savedQuestion.currentNumber;
+  lastNumber = savedQuestion.currentNumber;
+  currentAnswer = spellNumber(currentNumber);
+  attempt = savedQuestion.attempt;
+  locked = savedQuestion.locked;
+  numberEl.textContent = currentNumber;
+  attemptEl.textContent = attempt + ' / 2';
+  inputEl.value = '';
+  inputEl.disabled = false;
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Submit';
+  submitBtn.classList.remove('state-correct', 'state-wrong');
+  if (locked) {
+    inputEl.placeholder = currentAnswer;
+    feedbackEl.style.color = 'var(--red)';
+    feedbackEl.textContent = 'wrong — score reset to 0. type it to continue';
+  } else {
+    inputEl.placeholder = '';
+    feedbackEl.textContent = '';
+    feedbackEl.style.color = 'var(--muted-foreground)';
+  }
+  inputEl.focus();
+} else {
+  nextQuestion();
+}
 </script>
 </body>
 </html>
