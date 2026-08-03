@@ -377,9 +377,17 @@ const numberWords = {
   20:'veinte',21:'veintiuno',22:'veintidós',23:'veintitrés',24:'veinticuatro',25:'veinticinco',26:'veintiséis',27:'veintisiete',28:'veintiocho',29:'veintinueve'
 };
 const tens = {30:'treinta',40:'cuarenta',50:'cincuenta',60:'sesenta',70:'setenta',80:'ochenta',90:'noventa'};
+const hundreds = {200:'doscientos',300:'trescientos',400:'cuatrocientos',500:'quinientos',600:'seiscientos',700:'setecientos',800:'ochocientos',900:'novecientos'};
 
 function spellNumber(n){
+  if(n===1000) return 'mil';
   if(n===100) return 'cien';
+  if(n>100){
+    const h = Math.floor(n/100)*100;
+    const rest = n%100;
+    const hWord = h===100 ? 'ciento' : hundreds[h];
+    return rest===0 ? hWord : hWord + ' ' + spellNumber(rest);
+  }
   if(n<30) return numberWords[n];
   const t = Math.floor(n/10)*10;
   const r = n%10;
@@ -472,7 +480,7 @@ function renderStats(){
 function nextQuestion(){
   let n;
   do {
-    n = secureRandomInt(20, 100);
+    n = secureRandomInt(20, 1000);
   } while (n === lastNumber);
   currentNumber = n;
   lastNumber = n;
