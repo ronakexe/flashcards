@@ -248,6 +248,11 @@
     outline-offset: 1px;
   }
 
+  input[type="text"]::placeholder {
+    color: var(--muted-foreground);
+    opacity: 1;
+  }
+
   button#submit-btn {
     font-family: 'DM Sans', sans-serif;
     font-size: 15px;
@@ -406,6 +411,7 @@ const STATS_KEY = 'flashcards-spanish-numbers-stats';
 let score = 0;
 let bestScore = 0;
 let attempt = 1;
+let locked = false;
 let currentNumber;
 let currentAnswer;
 let lastNumber = null;
@@ -472,11 +478,13 @@ function nextQuestion(){
   lastNumber = n;
   currentAnswer = spellNumber(currentNumber);
   attempt = 1;
+  locked = false;
   numberEl.textContent = currentNumber;
   attemptEl.textContent = '1 / 2';
   feedbackEl.textContent = '';
   feedbackEl.style.color = 'var(--muted-foreground)';
   inputEl.value = '';
+  inputEl.placeholder = '';
   inputEl.disabled = false;
   submitBtn.disabled = false;
   submitBtn.textContent = 'Submit';
@@ -498,6 +506,16 @@ function submitAnswer(){
   const userAnswer = normalize(inputEl.value);
   const correct = normalize(currentAnswer);
   if(!inputEl.value.trim()) return;
+
+  if(locked){
+    if(userAnswer === correct){
+      nextQuestion();
+    } else {
+      inputEl.value = '';
+      inputEl.focus();
+    }
+    return;
+  }
 
   if(userAnswer === correct){
     updateScore(1);
@@ -527,11 +545,11 @@ function submitAnswer(){
     renderStats();
     saveStats();
     feedbackEl.style.color = 'var(--red)';
-    feedbackEl.textContent = 'wrong — answer was ' + currentAnswer + '. score reset to 0';
-    inputEl.disabled = true;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Wrong';
-    setTimeout(nextQuestion, 1800);
+    feedbackEl.textContent = 'wrong — score reset to 0. type it to continue';
+    inputEl.value = '';
+    inputEl.placeholder = currentAnswer;
+    locked = true;
+    inputEl.focus();
   }
 }
 
